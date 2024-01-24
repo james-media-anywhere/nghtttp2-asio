@@ -88,8 +88,7 @@ public:
 
   boost::asio::io_service &io_service();
 
-  bool signal_write();
-  void initiate_write();
+  void signal_write();
 
   void enter_callback();
   void leave_callback();
@@ -136,7 +135,6 @@ private:
 
   bool writing_;
   bool inside_callback_;
-  bool write_signaled_;  
   bool stopped_;
 };
 

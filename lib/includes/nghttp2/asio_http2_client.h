@@ -35,7 +35,7 @@ namespace client {
 
 class response_impl;
 
-class response {
+class EXETRNAL response {
 public:
   // Application must not call this directly.
   response();
@@ -71,7 +71,7 @@ using connect_cb =
 
 class request_impl;
 
-class request {
+class EXETRNAL request {
 public:
   // Application must not call this directly.
   request();
@@ -142,7 +142,7 @@ private:
 
 class session_impl;
 
-class session {
+class EXETRNAL session {
 public:
   // Starts HTTP/2 session by connecting to |host| and |service|
   // (e.g., "80") using clear text TCP connection with connect timeout
@@ -248,7 +248,7 @@ private:
 
 // configure |tls_ctx| for client use.  Currently, we just set NPN
 // callback for HTTP/2.
-boost::system::error_code
+boost::system::error_code EXETRNAL
 configure_tls_context(boost::system::error_code &ec,
                       boost::asio::ssl::context &tls_ctx);
 

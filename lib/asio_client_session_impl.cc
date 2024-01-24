@@ -599,21 +599,11 @@ void session_impl::shutdown() {
 
 boost::asio::io_service &session_impl::io_service() { return io_service_; }
 
-bool session_impl::signal_write() {
-  if (!inside_callback_ && !write_signaled_) {
-    write_signaled_ = true;
-    auto self = shared_from_this();
-    io_service_.post([self]() { self->initiate_write(); });
-    return true;
+void session_impl::signal_write() {
+  if (!inside_callback_) {
+    do_write();
   }
-  return false;
 }
-
-void session_impl::initiate_write() {
-  do_write();
-  write_signaled_ = false;
-}
-
 
 bool session_impl::should_stop() const {
   return !writing_ && !nghttp2_session_want_read(session_) &&

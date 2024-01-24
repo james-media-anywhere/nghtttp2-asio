@@ -38,6 +38,18 @@
 
 #include <nghttp2/nghttp2.h>
 
+#if defined(_WIN32) 
+#ifdef BUILD_ASIO
+#define EXETRNAL __declspec (dllexport) 
+#else
+#define EXETRNAL __declspec (dllimport) 
+#endif
+#else
+#define EXETRNAL
+#endif
+
+// #define EXETRNAL
+
 namespace nghttp2 {
 
 namespace asio_http2 {
