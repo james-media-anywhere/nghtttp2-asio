@@ -145,6 +145,10 @@ const request *session::submit(boost::system::error_code &ec,
                        std::move(prio), std::move(response), std::move(close));
 }
 
+tcp::socket &session::socket() {
+  return impl_->socket();
+}
+
 void session::read_timeout(const boost::posix_time::time_duration &t) {
   impl_->read_timeout(t);
 }

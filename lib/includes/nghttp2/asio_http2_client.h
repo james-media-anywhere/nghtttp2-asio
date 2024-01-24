@@ -26,6 +26,7 @@
 #define ASIO_HTTP2_CLIENT_H
 
 #include <nghttp2/asio_http2.h>
+using boost::asio::ip::tcp;
 
 namespace nghttp2 {
 
@@ -241,7 +242,7 @@ public:
                         header_map h = header_map{},
                         priority_spec prio = priority_spec()) const;
 
-
+  tcp::socket &socket();
 private:
   std::shared_ptr<session_impl> impl_;
 };
