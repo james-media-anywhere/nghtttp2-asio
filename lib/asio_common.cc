@@ -29,6 +29,7 @@
 
 #ifdef _WIN32
 #  include <io.h>
+//#  include <corecrt_io.h>
 #endif
 
 #include "util.h"

@@ -39,7 +39,7 @@ if (WIN32)
   list(APPEND CMAKE_INCLUDE_PATH "C:/Views/vcpkg/installed/x64-windows/include")
   list(APPEND CMAKE_LIBRARY_PATH "C:/Views/vcpkg/installed/x64-windows/lib")
   set(CMAKE_CXX_FLAGS_DEBUG  "-Zi")
-  add_compile_definitions(_WIN32_WINNT=0x0601) 
+  add_compile_definitions(_WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS) 
 endif (WIN32)
 
 math(EXPR LT_SOVERSION "${LT_CURRENT} - ${LT_AGE}")
