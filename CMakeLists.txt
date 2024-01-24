@@ -35,6 +35,13 @@ set(LT_AGE      0)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include(Version)
 
+if (WIN32)
+  list(APPEND CMAKE_INCLUDE_PATH "C:/Views/vcpkg/installed/x64-windows/include")
+  list(APPEND CMAKE_LIBRARY_PATH "C:/Views/vcpkg/installed/x64-windows/lib")
+  set(CMAKE_CXX_FLAGS_DEBUG  "-Zi")
+  add_compile_definitions(_WIN32_WINNT=0x0601) 
+endif (WIN32)
+
 math(EXPR LT_SOVERSION "${LT_CURRENT} - ${LT_AGE}")
 set(LT_VERSION "${LT_SOVERSION}.${LT_AGE}.${LT_REVISION}")
 set(PACKAGE_VERSION     "${PROJECT_VERSION}")

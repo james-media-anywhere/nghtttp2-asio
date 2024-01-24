@@ -27,9 +27,20 @@
 #include <fcntl.h>
 #include <memory>
 
+#ifdef _WIN32
+#  include <io.h>
+#endif
+
 #include "util.h"
 #include "template.h"
 #include "http2.h"
+
+#ifdef _WIN32
+#  define FD_MAGIC(f) _##f
+#else
+#  define FD_MAGIC(f) f
+#endif
+
 
 namespace nghttp2 {
 namespace asio_http2 {
@@ -103,7 +114,7 @@ std::shared_ptr<Defer<F, T...>> defer_shared(F &&f, T &&...t) {
 }
 
 generator_cb file_generator(const std::string &path) {
-  auto fd = open(path.c_str(), O_RDONLY);
+  auto fd = FD_MAGIC(open)(path.c_str(), O_RDONLY);
   if (fd == -1) {
     return generator_cb();
   }
@@ -112,12 +123,12 @@ generator_cb file_generator(const std::string &path) {
 }
 
 generator_cb file_generator_from_fd(int fd) {
-  auto d = defer_shared(close, fd);
+  auto d = defer_shared(FD_MAGIC(close), fd);
 
   return [fd, d](uint8_t *buf, size_t len,
                  uint32_t *data_flags) -> generator_cb::result_type {
     ssize_t n;
-    while ((n = read(fd, buf, len)) == -1 && errno == EINTR)
+    while ((n = FD_MAGIC(read)(fd, buf, len)) == -1 && errno == EINTR)
       ;
 
     if (n == -1) {

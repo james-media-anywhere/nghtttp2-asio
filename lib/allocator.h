@@ -36,6 +36,9 @@
 
 #include "template.h"
 
+#undef min
+#undef max
+
 namespace nghttp2 {
 
 struct MemBlock {
