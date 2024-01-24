@@ -67,10 +67,12 @@ public:
   std::unique_ptr<stream> pop_stream(int32_t stream_id);
   stream *create_push_stream(int32_t stream_id);
   stream *find_stream(int32_t stream_id);
-
+                        
   const request *submit(boost::system::error_code &ec,
                         const std::string &method, const std::string &uri,
-                        generator_cb cb, header_map h, priority_spec spec);
+                        generator_cb cb, header_map h, priority_spec spec, 
+                        response_cb response = nullptr,
+                        close_cb close = nullptr);
 
   virtual void start_connect(tcp::resolver::iterator endpoint_it) = 0;
   virtual tcp::socket &socket() = 0;
@@ -86,7 +88,8 @@ public:
 
   boost::asio::io_service &io_service();
 
-  void signal_write();
+  bool signal_write();
+  void initiate_write();
 
   void enter_callback();
   void leave_callback();
@@ -133,6 +136,7 @@ private:
 
   bool writing_;
   bool inside_callback_;
+  bool write_signaled_;  
   bool stopped_;
 };
 

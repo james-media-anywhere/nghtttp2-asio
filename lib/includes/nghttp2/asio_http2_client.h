@@ -232,6 +232,15 @@ public:
                         const std::string &method, const std::string &uri,
                         generator_cb cb, header_map h = header_map{},
                         priority_spec prio = priority_spec()) const;
+                        
+  //Checked in code has a race condition
+  const request *submit(boost::system::error_code &ec,
+                        const std::string &method, const std::string &uri,
+                        response_cb response,
+                        close_cb close,
+                        header_map h = header_map{},
+                        priority_spec prio = priority_spec()) const;
+
 
 private:
   std::shared_ptr<session_impl> impl_;

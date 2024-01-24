@@ -479,7 +479,8 @@ std::unique_ptr<stream> session_impl::create_stream() {
 const request *session_impl::submit(boost::system::error_code &ec,
                                     const std::string &method,
                                     const std::string &uri, generator_cb cb,
-                                    header_map h, priority_spec prio) {
+                                    header_map h, priority_spec prio,
+                                    response_cb response, close_cb close ) {
   ec.clear();
 
   if (stopped_) {
@@ -503,6 +504,13 @@ const request *session_impl::submit(boost::system::error_code &ec,
   auto strm = create_stream();
   auto &req = strm->request().impl();
   auto &uref = req.uri();
+
+  if (response) {
+    strm->request().on_response(response);
+  }
+  if (close) {
+    strm->request().on_close(close);
+  }
 
   http2::copy_url_component(uref.scheme, &u, UF_SCHEMA, uri.c_str());
   http2::copy_url_component(uref.host, &u, UF_HOST, uri.c_str());
@@ -565,6 +573,10 @@ const request *session_impl::submit(boost::system::error_code &ec,
     ec = make_error_code(static_cast<nghttp2_error>(stream_id));
     return nullptr;
   }
+  if (!stream_id) {
+    ec = make_error_code(static_cast<nghttp2_error>(NGHTTP2_INTERNAL_ERROR));
+    return nullptr;
+  }
 
   signal_write();
 
@@ -587,11 +599,21 @@ void session_impl::shutdown() {
 
 boost::asio::io_service &session_impl::io_service() { return io_service_; }
 
-void session_impl::signal_write() {
-  if (!inside_callback_) {
-    do_write();
+bool session_impl::signal_write() {
+  if (!inside_callback_ && !write_signaled_) {
+    write_signaled_ = true;
+    auto self = shared_from_this();
+    io_service_.post([self]() { self->initiate_write(); });
+    return true;
   }
+  return false;
 }
+
+void session_impl::initiate_write() {
+  do_write();
+  write_signaled_ = false;
+}
+
 
 bool session_impl::should_stop() const {
   return !writing_ && !nghttp2_session_want_read(session_) &&

@@ -136,6 +136,15 @@ const request *session::submit(boost::system::error_code &ec,
                        std::move(prio));
 }
 
+const request *session::submit(boost::system::error_code &ec,
+                               const std::string &method,
+                      const std::string &uri, response_cb response,
+                      close_cb close, header_map h ,
+                      priority_spec prio ) const {
+  return impl_->submit(ec, method, uri, generator_cb(), std::move(h),
+                       std::move(prio), std::move(response), std::move(close));
+}
+
 void session::read_timeout(const boost::posix_time::time_duration &t) {
   impl_->read_timeout(t);
 }
