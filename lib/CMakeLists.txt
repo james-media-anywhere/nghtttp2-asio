@@ -1,5 +1,15 @@
 add_subdirectory(includes)
 
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(PROJECT_NAME nghttp2_asio_d)
+else()
+set(PROJECT_NAME nghttp2_asio)
+endif()
+
+include(CMakePrintHelpers)
+cmake_print_variables(PROJECT_NAME)
+
 file(GLOB c_sources *.c)
 set_source_files_properties(${c_sources} PROPERTIES
   COMPILE_FLAGS "${WARNCFLAGS}")
@@ -36,11 +46,11 @@ set(NGHTTP2_ASIO_SOURCES
   asio_client_tls_context.cc
 )
 
-add_library(nghttp2_asio SHARED
+add_library(${PROJECT_NAME} SHARED
   ${NGHTTP2_ASIO_SOURCES}
   $<TARGET_OBJECTS:url-parser>
 )
-target_include_directories(nghttp2_asio PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/includes"
   "${CMAKE_CURRENT_SOURCE_DIR}/../third-party"
 
@@ -48,20 +58,20 @@ target_include_directories(nghttp2_asio PRIVATE
   ${OPENSSL_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
-target_include_directories(nghttp2_asio INTERFACE
+target_include_directories(${PROJECT_NAME} INTERFACE
   "${CMAKE_CURRENT_BINARY_DIR}/../lib/includes"
   "${CMAKE_CURRENT_SOURCE_DIR}/../lib/includes"
   "${CMAKE_CURRENT_SOURCE_DIR}/includes"
 )
-target_link_libraries(nghttp2_asio
+target_link_libraries(${PROJECT_NAME}
   ${LIBNGHTTP2_LIBRARIES}
   ${OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
 )
-set_target_properties(nghttp2_asio PROPERTIES
+set_target_properties(${PROJECT_NAME} PROPERTIES
   VERSION ${LT_VERSION} SOVERSION ${LT_SOVERSION})
 
-install(TARGETS nghttp2_asio
+install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
