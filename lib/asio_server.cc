@@ -140,6 +140,8 @@ void server::start_accept(boost::asio::ssl::context &tls_context,
         if (!e) {
           new_connection->socket().lowest_layer().set_option(
               tcp::no_delay(true));
+          //new_connection->socket().lowest_layer().set_option(    
+          //  boost::asio::socket_base::receive_buffer_size(0x100000));
           new_connection->start_tls_handshake_deadline();
           new_connection->socket().async_handshake(
               boost::asio::ssl::stream_base::server,
